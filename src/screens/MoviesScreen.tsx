@@ -1,17 +1,18 @@
 import React, {useEffect} from 'react';
 import {SafeAreaView, StyleSheet, Text, View, Dimensions} from 'react-native';
-//import {IMDBResponse} from '../interfaces/IMDbInterface';
 import axios from 'axios';
+//components
 import SearchBar from '../components/SearchBar';
 import MovieList from '../components/MovieList';
+import LogoutBotton from '../components/LogoutBotton';
 // redux
 import {useSelector, useDispatch} from 'react-redux';
 import {setMovies} from './../redux/actions/moviesActions';
 import {RootState} from '../redux/store';
-import {useSearch} from './../hooks/useSearch';
 import {GET_IMDb_movies} from '../api/IMDb';
-import LogoutBotton from '../components/LogoutBotton';
-
+//hooks
+import {useSearch} from './../hooks/useSearch';
+import {useUserInformation} from '../hooks/useUserInformation';
 //import {debounce} from '../helpers/debounce';
 //import {useMovies} from './../hooks/useMovies';
 const {width: screenWidth} = Dimensions.get('window');
@@ -19,6 +20,7 @@ const {width: screenWidth} = Dimensions.get('window');
 const MoviesScreen = () => {
   const {searchBarValue, cleanSearchBarValue, changeSearchBarValue} =
     useSearch();
+  const {userInfo} = useUserInformation();
   const moviesListRedux = useSelector((state: RootState) => {
     return state.moviesReducers;
   });
@@ -30,7 +32,6 @@ const MoviesScreen = () => {
       const IMDbResponse = await Promise.all([
         GET_IMDb_movies(searchBarValue, source),
       ]);
-      console.log('promesa exitosa');
       dispatch(
         setMovies({
           d: IMDbResponse[0].data.d,
@@ -51,7 +52,6 @@ const MoviesScreen = () => {
     let source = axios.CancelToken.source();
     let timeoutId = setTimeout(() => {
       if (searchBarValue !== '') {
-        console.log('ejecuciongetmovies');
         getMovies(source);
       }
     }, 1000);
@@ -66,8 +66,9 @@ const MoviesScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <LogoutBotton text="logout" cleanSearchBarValue={cleanSearchBarValue} />
+        <LogoutBotton text="Logout" cleanSearchBarValue={cleanSearchBarValue} />
         <Text style={styles.title}>Welcome!</Text>
+        <Text style={styles.subTitle}>{userInfo.email}</Text>
         <SearchBar
           changeSearchBarValue={changeSearchBarValue}
           searchBarValue={searchBarValue}
@@ -91,6 +92,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 40,
+    color: '#000000',
+    textAlign: 'center',
+    marginTop: -5,
+  },
+  subTitle: {
+    fontSize: 20,
     color: '#000000',
     textAlign: 'center',
     marginVertical: 3,

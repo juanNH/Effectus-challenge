@@ -1,7 +1,9 @@
-import React from 'react';
+import {useNavigation} from '@react-navigation/native';
+import React, {useEffect} from 'react';
 import {Image, SafeAreaView, StyleSheet, View, Dimensions} from 'react-native';
 import AppButton from '../components/AppButton';
 import AppTextInput from '../components/AppTextInput';
+import auth from '@react-native-firebase/auth';
 
 //hooks
 import useLogin from './../hooks/useLogin';
@@ -9,7 +11,31 @@ import useLogin from './../hooks/useLogin';
 const {width: screenWidth} = Dimensions.get('window');
 
 const LoginScreen = () => {
-  const {login, changeEmail, changePassword, sendData} = useLogin();
+  const navigation = useNavigation();
+
+  const {
+    login,
+    changeEmail,
+    changePassword,
+    sendData,
+    userInfo,
+    onAuthStateChanged,
+    event,
+    eye,
+    changeEyeVisibility,
+  } = useLogin();
+  useEffect(() => {
+    if (userInfo.data) {
+      return navigation.navigate('MoviesScreen');
+    }
+    if (userInfo.email !== '' && userInfo.password !== '') {
+      const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+      console.log(userInfo);
+      return subscriber;
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [event, userInfo]);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.itemsContainer}>
@@ -31,6 +57,8 @@ const LoginScreen = () => {
           placeholder="Password"
           onChange={changePassword}
           typePassword={true}
+          eye={eye}
+          changeEyeVisibility={changeEyeVisibility}
         />
         <AppButton text="Login" sendData={sendData} />
       </View>

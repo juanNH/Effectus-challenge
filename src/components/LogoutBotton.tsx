@@ -1,20 +1,26 @@
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-
+import {useDispatch} from 'react-redux';
+import {cleanMovies} from '../redux/actions/moviesActions';
+import {userLogout} from '../redux/actions/usersActions';
 interface Props {
   text: string;
   cleanSearchBarValue: () => void;
 }
 
 const LogoutBotton = ({text, cleanSearchBarValue}: Props) => {
+  const handlepress = () => {
+    cleanSearchBarValue();
+    dispatch(cleanMovies());
+    dispatch(userLogout());
+    navigation.navigate('LoginScreen');
+  };
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   return (
     <View style={styles.logOutContainer}>
-      <TouchableOpacity
-        style={styles.logOutBotton}
-        onPress={() => {
-          cleanSearchBarValue();
-          console.log('asd');
-        }}>
+      <TouchableOpacity style={styles.logOutBotton} onPress={handlepress}>
         <Text style={styles.logOutText}>{text}</Text>
       </TouchableOpacity>
     </View>
@@ -22,13 +28,10 @@ const LogoutBotton = ({text, cleanSearchBarValue}: Props) => {
 };
 const styles = StyleSheet.create({
   logOutContainer: {
-    flex: 1,
+    alignItems: 'flex-end',
   },
   logOutBotton: {
-    top: 0,
-    position: 'absolute',
-    right: 0,
-    marginRight: 10,
+    marginRight: 8,
   },
   logOutText: {
     color: '#000000',

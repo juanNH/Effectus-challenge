@@ -10,7 +10,7 @@ interface Props {
 
 const MovieList = ({moviesList, searchBarValueLength}: Props) => {
   return (
-    <View style={{paddingBottom: 230}}>
+    <View style={{paddingBottom: 320}}>
       {moviesList.d && moviesList.d.length > 0 ? (
         <FlatList
           data={moviesList.d}

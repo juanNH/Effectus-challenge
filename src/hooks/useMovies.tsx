@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
-import {InitialState} from '../interfaces/redux';
+import {InitialState} from '../interfaces/movies';
 import {setMovies} from '../redux/actions/moviesActions';
 
 export const useMovies = async (searchBarValue: string) => {
@@ -26,10 +26,8 @@ export const useMovies = async (searchBarValue: string) => {
         'https://imdb8.p.rapidapi.com/auto-complete',
         config,
       );
-      console.log('promesa');
 
       const IMDbResponse = await Promise.all([IMDbResponsePromise]);
-      console.log('promesa exitosa');
       setMoviesState({
         d: IMDbResponse[0].data.d,
         q: IMDbResponse[0].data.q,
@@ -47,7 +45,6 @@ export const useMovies = async (searchBarValue: string) => {
     let source = axios.CancelToken.source();
     let timeoutId = setTimeout(() => {
       if (searchBarValue !== '') {
-        console.log('ejecuciongetmovies');
         getMovies(source);
       }
     }, 5000);

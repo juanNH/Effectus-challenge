@@ -1,5 +1,5 @@
 import {IMDBResponse} from '../../interfaces/IMDbInterface';
-import {InitialState} from '../../interfaces/redux';
+import {InitialState} from '../../interfaces/movies';
 import {SET_MOVIES, CLEAN_MOVIES} from '../actions/moviesActions';
 
 interface Action {
