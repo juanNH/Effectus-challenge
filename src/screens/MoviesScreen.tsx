@@ -1,51 +1,35 @@
-import React, {useEffect, useState} from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Dimensions,
-} from 'react-native';
+import React, {useEffect} from 'react';
+import {SafeAreaView, StyleSheet, Text, View, Dimensions} from 'react-native';
 //import {IMDBResponse} from '../interfaces/IMDbInterface';
 import axios from 'axios';
 import SearchBar from '../components/SearchBar';
 import MovieList from '../components/MovieList';
 // redux
 import {useSelector, useDispatch} from 'react-redux';
-import {setMovies, cleanMovies} from './../redux/actions/moviesActions';
+import {setMovies} from './../redux/actions/moviesActions';
 import {RootState} from '../redux/store';
+import {useSearch} from './../hooks/useSearch';
+import {GET_IMDb_movies} from '../api/IMDb';
+import LogoutBotton from '../components/LogoutBotton';
 
 //import {debounce} from '../helpers/debounce';
 //import {useMovies} from './../hooks/useMovies';
 const {width: screenWidth} = Dimensions.get('window');
 
 const MoviesScreen = () => {
+  const {searchBarValue, cleanSearchBarValue, changeSearchBarValue} =
+    useSearch();
   const moviesListRedux = useSelector((state: RootState) => {
     return state.moviesReducers;
   });
   const dispatch = useDispatch();
   //const {movies} = useMovies();
-  const [searchBarValue, setSearchBarValue] = useState<string>('');
   const moviesList = moviesListRedux;
   const getMovies = async (source: any) => {
     try {
-      const config = {
-        headers: {
-          'X-RapidAPI-Host': 'imdb8.p.rapidapi.com',
-          'X-RapidAPI-Key':
-            '16ab26ce60mshc0a51f737040285p1a65ffjsnda518e7a8c23',
-        },
-        params: {q: searchBarValue},
-        cancelToken: source.token,
-      };
-      const IMDbResponsePromise = axios.get(
-        'https://imdb8.p.rapidapi.com/auto-complete',
-        config,
-      );
-      console.log('promesa');
-
-      const IMDbResponse = await Promise.all([IMDbResponsePromise]);
+      const IMDbResponse = await Promise.all([
+        GET_IMDb_movies(searchBarValue, source),
+      ]);
       console.log('promesa exitosa');
       dispatch(
         setMovies({
@@ -62,13 +46,7 @@ const MoviesScreen = () => {
       }
     }
   };
-  const cleanSearchBarValue = () => {
-    setSearchBarValue('');
-    dispatch(cleanMovies());
-  };
-  const changeSearchBarValue = (text: string): void => {
-    setSearchBarValue(text);
-  };
+
   useEffect(() => {
     let source = axios.CancelToken.source();
     let timeoutId = setTimeout(() => {
@@ -76,7 +54,7 @@ const MoviesScreen = () => {
         console.log('ejecuciongetmovies');
         getMovies(source);
       }
-    }, 5000);
+    }, 1000);
 
     return () => {
       source.cancel();
@@ -88,28 +66,22 @@ const MoviesScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <View style={styles.logOutContainer}>
-          <TouchableOpacity
-            style={styles.logOutBotton}
-            onPress={() => console.log('asd')}>
-            <Text style={styles.logOutText}>logout</Text>
-          </TouchableOpacity>
-        </View>
+        <LogoutBotton text="logout" cleanSearchBarValue={cleanSearchBarValue} />
         <Text style={styles.title}>Welcome!</Text>
         <SearchBar
           changeSearchBarValue={changeSearchBarValue}
           searchBarValue={searchBarValue}
           cleanSearchBarValue={cleanSearchBarValue}
         />
-        <MovieList moviesList={moviesList} />
+        <MovieList
+          moviesList={moviesList}
+          searchBarValueLength={searchBarValue.length}
+        />
       </View>
     </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({
-  logOutContainer: {
-    flex: 1,
-  },
   container: {
     flex: 1,
     marginTop: 5,
@@ -122,17 +94,6 @@ const styles = StyleSheet.create({
     color: '#000000',
     textAlign: 'center',
     marginVertical: 3,
-  },
-  logOutBotton: {
-    top: 0,
-    position: 'absolute',
-    right: 0,
-    marginRight: 10,
-  },
-  logOutText: {
-    color: '#000000',
-    opacity: 0.8,
-    fontSize: 16,
   },
   textInputSearch: {
     borderRadius: 20,
