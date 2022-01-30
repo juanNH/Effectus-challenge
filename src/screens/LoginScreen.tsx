@@ -1,26 +1,15 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Image, SafeAreaView, StyleSheet, View, Dimensions} from 'react-native';
 import AppButton from '../components/AppButton';
 import AppTextInput from '../components/AppTextInput';
 
+//hooks
+import useLogin from './../hooks/useLogin';
+
 const {width: screenWidth} = Dimensions.get('window');
 
 const LoginScreen = () => {
-  const [login, setLogin] = useState({
-    email: '',
-    password: '',
-  });
-
-  const changeEmail = (email: string): void => {
-    setLogin({...login, email: email});
-  };
-  const changePassword = (password: string): void => {
-    setLogin({...login, password: password});
-  };
-
-  const sendData = () => {
-    console.log(login);
-  };
+  const {login, changeEmail, changePassword, sendData} = useLogin();
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.itemsContainer}>
@@ -41,6 +30,7 @@ const LoginScreen = () => {
           value={login.password}
           placeholder="Password"
           onChange={changePassword}
+          typePassword={true}
         />
         <AppButton text="Login" sendData={sendData} />
       </View>
