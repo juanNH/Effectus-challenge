@@ -7,22 +7,27 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import {IMDBResponse} from '../interfaces/IMDbInterface';
+//import {IMDBResponse} from '../interfaces/IMDbInterface';
 import axios from 'axios';
 import SearchBar from '../components/SearchBar';
-import MovieList from '../components/movieList';
+import MovieList from '../components/MovieList';
+// redux
+import {useSelector, useDispatch} from 'react-redux';
+import {setMovies, cleanMovies} from './../redux/actions/moviesActions';
+import {RootState} from '../redux/store';
+
 //import {debounce} from '../helpers/debounce';
 //import {useMovies} from './../hooks/useMovies';
 const {width: screenWidth} = Dimensions.get('window');
 
 const MoviesScreen = () => {
+  const moviesListRedux = useSelector((state: RootState) => {
+    return state.moviesReducers;
+  });
+  const dispatch = useDispatch();
   //const {movies} = useMovies();
   const [searchBarValue, setSearchBarValue] = useState<string>('');
-  const [moviesList, setMoviesList] = useState<IMDBResponse>({
-    d: [],
-    q: '',
-    v: 0,
-  });
+  const moviesList = moviesListRedux;
   const getMovies = async (source: any) => {
     try {
       const config = {
@@ -42,11 +47,13 @@ const MoviesScreen = () => {
 
       const IMDbResponse = await Promise.all([IMDbResponsePromise]);
       console.log('promesa exitosa');
-      setMoviesList({
-        d: IMDbResponse[0].data.d,
-        q: IMDbResponse[0].data.q,
-        v: IMDbResponse[0].data.v,
-      });
+      dispatch(
+        setMovies({
+          d: IMDbResponse[0].data.d,
+          q: IMDbResponse[0].data.q,
+          v: IMDbResponse[0].data.v,
+        }),
+      );
     } catch (error) {
       if (axios.isCancel(error)) {
         console.log('Peticion atrapada');
@@ -57,6 +64,7 @@ const MoviesScreen = () => {
   };
   const cleanSearchBarValue = () => {
     setSearchBarValue('');
+    dispatch(cleanMovies());
   };
   const changeSearchBarValue = (text: string): void => {
     setSearchBarValue(text);
@@ -64,12 +72,15 @@ const MoviesScreen = () => {
   useEffect(() => {
     let source = axios.CancelToken.source();
     let timeoutId = setTimeout(() => {
-      console.log('ejecuciongetmovies');
-      getMovies(source);
+      if (searchBarValue !== '') {
+        console.log('ejecuciongetmovies');
+        getMovies(source);
+      }
     }, 5000);
 
     return () => {
       source.cancel();
+
       clearTimeout(timeoutId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
