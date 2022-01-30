@@ -1,15 +1,16 @@
 import React from 'react';
-import {FlatList, Text, View} from 'react-native';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {IMDBResponse} from '../interfaces/IMDbInterface';
 import MovieCard from './MovieCard';
 
 interface Props {
   moviesList: IMDBResponse;
+  searchBarValueLength: number;
 }
 
-const MovieList = ({moviesList}: Props) => {
+const MovieList = ({moviesList, searchBarValueLength}: Props) => {
   return (
-    <View>
+    <View style={{paddingBottom: 230}}>
       {moviesList.d && moviesList.d.length > 0 ? (
         <FlatList
           data={moviesList.d}
@@ -17,11 +18,27 @@ const MovieList = ({moviesList}: Props) => {
           renderItem={({item}: any) => <MovieCard movie={item} />}
           showsVerticalScrollIndicator={false}
         />
+      ) : searchBarValueLength !== 0 && moviesList.d === undefined ? (
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>No movies, look for some </Text>
+        </View>
       ) : (
-        <Text>no hay peliculas </Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>Please, insert a movie title</Text>
+        </View>
       )}
     </View>
   );
 };
-
+const styles = StyleSheet.create({
+  text: {
+    color: '#000000',
+    fontSize: 16,
+  },
+  textContainer: {
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 export default MovieList;
