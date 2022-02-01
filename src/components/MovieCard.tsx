@@ -5,23 +5,17 @@ const {height: screenHeight, width: screenWidth} = Dimensions.get('window');
 const MovieCard = ({movie}: any) => {
   return (
     <View style={styles.item}>
-      {movie.i && movie.i.imageUrl ? (
-        <Image
-          style={styles.image}
-          source={{
-            uri: movie.i.imageUrl,
-          }}
-          resizeMode="cover"
-        />
-      ) : (
-        <Image
-          style={styles.image}
-          source={{
-            uri: 'https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png',
-          }}
-          resizeMode="cover"
-        />
-      )}
+      <Image
+        style={styles.image}
+        source={{
+          uri:
+            movie.i && movie.i.imageUrl
+              ? movie.i.imageUrl
+              : 'https://www.emsevilla.es/wp-content/uploads/2020/10/no-image-1.png',
+        }}
+        resizeMode={movie.i && movie.i.imageUrl ? 'cover' : 'center'}
+      />
+
       <Text style={styles.title}>{movie.l}</Text>
     </View>
   );

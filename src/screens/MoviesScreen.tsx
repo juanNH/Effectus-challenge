@@ -21,6 +21,7 @@ const MoviesScreen = () => {
   const {searchBarValue, cleanSearchBarValue, changeSearchBarValue} =
     useSearch();
   const {userInfo} = useUserInformation();
+  console.log(userInfo.data);
   const moviesListRedux = useSelector((state: RootState) => {
     return state.moviesReducers;
   });

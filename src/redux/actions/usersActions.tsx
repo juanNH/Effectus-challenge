@@ -1,11 +1,10 @@
 import auth from '@react-native-firebase/auth';
 import {InitialState} from '../../interfaces/user';
-import {initialState} from '../reducers/usersReducers';
 //types
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
 export const SAVEINFORMATION = 'SAVEINFORMATION';
-
+export const CLEAN = 'CLEANUSER';
 export const userLogin = (loginData: InitialState) => async (dispatch: any) => {
   dispatch({
     type: LOGIN,
@@ -21,7 +20,13 @@ export const userLogout = () => async (dispatch: any) => {
   }
   dispatch({
     type: LOGOUT,
-    payload: initialState,
+    payload: {},
+  });
+};
+export const userClean = () => async (dispatch: any) => {
+  dispatch({
+    type: CLEAN,
+    payload: {},
   });
 };
 

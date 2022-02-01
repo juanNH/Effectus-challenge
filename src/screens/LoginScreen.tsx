@@ -20,7 +20,6 @@ const LoginScreen = () => {
     sendData,
     userInfo,
     onAuthStateChanged,
-    event,
     eye,
     changeEyeVisibility,
   } = useLogin();
@@ -33,9 +32,8 @@ const LoginScreen = () => {
       console.log(userInfo);
       return subscriber;
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [event, userInfo]);
+  }, [userInfo]);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.itemsContainer}>

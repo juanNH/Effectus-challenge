@@ -1,5 +1,5 @@
 import {InitialState} from '../../interfaces/user';
-import {LOGIN, LOGOUT, SAVEINFORMATION} from '../actions/usersActions';
+import {LOGIN, LOGOUT, SAVEINFORMATION, CLEAN} from '../actions/usersActions';
 
 interface Action {
   type: string;
@@ -17,9 +17,11 @@ const usersReducer = (state = initialState, action: Action) => {
     case LOGIN:
       return action.payload;
     case LOGOUT:
-      return action.payload;
+      return initialState;
     case SAVEINFORMATION:
       return action.payload;
+    case CLEAN:
+      return initialState;
     default:
       return state;
   }

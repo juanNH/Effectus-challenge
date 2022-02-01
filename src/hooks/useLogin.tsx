@@ -1,7 +1,11 @@
 import {useState} from 'react';
 import {InitialState} from '../interfaces/user';
 import {useSelector, useDispatch} from 'react-redux';
-import {saveUserInformation, userLogin} from '../redux/actions/usersActions';
+import {
+  saveUserInformation,
+  userClean,
+  userLogin,
+} from '../redux/actions/usersActions';
 import {RootState} from '../redux/store';
 import {userLoginFirebase} from '../firebase/userLoginFirebase';
 import {Alert} from 'react-native';
@@ -10,27 +14,32 @@ const useLogin = () => {
   const userInfo = useSelector((state: RootState) => {
     return state.userReducers;
   });
-  const [event, setEvent] = useState(false);
   const [login, setLogin] = useState<InitialState>({
     email: '',
     password: '',
   });
-  const [eye, setEye] = useState(true);
-  const changeEyeVisibility = () => {
+  const [eye, setEye] = useState<boolean>(true);
+  const changeEyeVisibility = (): void => {
     setEye(!eye);
   };
-
   const changeEmail = (email: string): void => {
     setLogin({...login, email: email});
   };
   const changePassword = (password: string): void => {
     setLogin({...login, password: password});
   };
-  const sendData = () => {
-    dispatch(userLogin(login));
-    setEvent(!event);
+  const sendData = async (): Promise<void> => {
+    if (login.password && login.email) {
+      await dispatch(userLogin(login));
+    } else {
+      Alert.alert('Alert', 'Please, complete Email and password field', [
+        {
+          text: 'Ok',
+        },
+      ]);
+    }
   };
-  const onAuthStateChanged = async () => {
+  const onAuthStateChanged = async (): Promise<void> => {
     let userData = await userLoginFirebase(userInfo);
     if (userData !== true) {
       setLogin({
@@ -45,6 +54,7 @@ const useLogin = () => {
         }),
       );
     } else {
+      dispatch(userClean());
       Alert.alert(
         'Error',
         'The password is invalid or the user does not have a password',
@@ -64,7 +74,6 @@ const useLogin = () => {
     sendData,
     userInfo,
     onAuthStateChanged,
-    event,
     changeEyeVisibility,
     eye,
   };
